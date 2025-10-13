@@ -2,7 +2,7 @@
 A software tool whose main objective is to make data comprehension more readable for both home buyers and Real Estate employees.
 
 
-**<ins>   -Agenda   </ins>**______________________________________
+**<ins>   -Agenda   </ins>**_______________________________________________________________________________________________
 
 
 -<ins>Customer</ins> (Daira Guadalupe Aguilar) - The Customer drives the project, setting goals and priorities, explains stories, and views CRC sessions.
