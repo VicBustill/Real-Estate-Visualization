@@ -1,6 +1,12 @@
 # Real-Estate-Visualization
 A software tool whose main objective is to make data comprehension more readable for both home buyers and Real Estate employees.
 
+**<ins>   -Problem statement:   </ins>**
+Buyers cannot compare neighborhoods as quickly, information of listings can vary from sites. Due to them being scattered around in spreadsheets or sites, using data visualization can help. 
+During meetings, agents are unable to rapidly display pricing trends/information by neighborhood.
+Software should adapt to most recent computed data
+Buyers should be able to see computed data that is full and accurate with no crashes. 
+
 
 **<ins>   -Agenda   </ins>**_______________________________________________________________________________________________
 
