@@ -6,7 +6,8 @@ from utils.io import load_first_csv
 
 st.set_page_config(page_title="CSC 481 Real Estate Dashboard", layout="wide")
 st.title("Real Estate Visualization (CSC 481)")
-st.caption("Drop your real data CSVs into the `data/` folder. This app reads the first CSV it finds.")
+st.caption(
+    "Drop your real data CSVs into the `data/` folder. This app reads the first CSV it finds.")
 
 df = load_first_csv("data")
 
@@ -14,11 +15,57 @@ with st.sidebar:
     st.header("Filters")
     zip_code = st.text_input("ZIP (optional)", "")
     min_price = st.number_input("Min price", min_value=0, value=0, step=50000)
-    max_price = st.number_input("Max price", min_value=0, value=2_000_000, step=50000)
+    max_price = st.number_input(
+        "Max price", min_value=0, value=2_000_000, step=50000)
     min_beds = st.number_input("Min beds", min_value=0, value=0, step=1)
 
+# if df is None:
+    # st.info("No data yet. Add a CSV into the `data/` folder and reload.")
+# else:
+    # q = df.copy()
+    # st.dataframe(q.head())
+
+    # fixing the CSV data
 if df is None:
     st.info("No data yet. Add a CSV into the `data/` folder and reload.")
 else:
     q = df.copy()
-    st.dataframe(q.head())
+    #st.dataframe(q.head())
+    # uppercase or lowercase should not matter
+    q.columns = q.columns = [str(c).strip().lower() for c in q.columns]
+
+    # this will help find important columns for zip, price, and beds
+    zip_columns = None
+    for name in ["zip", "zipcode", "postal_code"]:
+        if name in q.columns:
+            zip_columns = name
+            break
+
+    price_columns = None
+    for name in ["price", "list_price", "listprice"]:
+        if name in q.columns:
+            price_columns = name
+            break
+
+    bed_columns = None
+    for name in ["beds", "bedrooms", "br"]:
+        if name in q.columns:
+            bed_columns = name
+            break
+
+    # whatever the user chooses in the sidebar should appear
+    if zip_code and zip_columns:
+        # the ZIP column and convert every value to a string so we can safely treat it like text
+        q = q[q[zip_code].astype(str).str.startswith(zip_code)]
+
+    if price_columns:
+        q = q[(q[price_columns] >= min_price) &
+              (q[price_columns] <= max_price)]
+
+    if bed_columns:
+        q = q[q[bed_columns] >= min_beds]
+
+    st.subheader("Match the Listings")
+    st.dataframe(q)
+
+    # not sure if yall are up for it but maybe we can implement a chart displaying these listings or whatnot
