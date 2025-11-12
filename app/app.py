@@ -1,7 +1,7 @@
 import os
-import streamlit as st
-import pandas as pd
-import pydeck as pdk
+import streamlit as st # type: ignore
+import pandas as pd # type: ignore
+import pydeck as pdk # type: ignore
 from utils.io import load_first_csv
 
 st.set_page_config(page_title="CSC 481 Real Estate Dashboard", layout="wide")
@@ -10,6 +10,10 @@ st.caption(
     "Drop your real data CSVs into the `data/` folder. This app reads the first CSV it finds.")
 
 df = load_first_csv("data")
+st.write("DEBUG: DataFrame result ->", df)
+st.write("DEBUG: Loaded CSVs ->", os.listdir("data"))
+st.write("DEBUG: DataFrame type ->", type(df))
+
 
 with st.sidebar:
     st.header("Filters")

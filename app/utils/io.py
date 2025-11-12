@@ -1,7 +1,7 @@
 from __future__ import annotations
 import os
 import glob
-import pandas as pd
+import pandas as pd # type: ignore
 
 def load_first_csv(data_dir: str = "data") -> pd.DataFrame | None:
     os.makedirs(data_dir, exist_ok=True)
