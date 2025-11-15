@@ -2,7 +2,7 @@ import requests
 import json
 import csv
 
-API_KEY = "8355e5b44e76466296525f90b9523f35"  # <-- replace with your real key
+API_KEY = "8355e5b44e76466296525f90b9523f35"  # Remove our API Key later 
 
 #   "Active"   -> only active listings
 #   "Inactive" -> only inactive (off-market) listings
@@ -23,11 +23,11 @@ def build_range(min_value, max_value):
 
 
 def fetch_listings(
-    listing_type="sale",      # "sale" or "rental"
+    listing_type="sale",      # "sale" or "rental" But we are focused on Sale for now
     zip_code=None,
     city=None,
     state=None,
-    property_type=None,       # e.g. "Single Family", "Condo", etc.
+    property_type=None,       # e.g. "Single Family", "Condo". We will use filters in our other program for this.
     min_bedrooms=None,
     max_bedrooms=None,
     min_bathrooms=None,
@@ -42,12 +42,12 @@ def fetch_listings(
     max_year=None,
     min_days_old=None,
     max_days_old=None,
-    status=None,              # e.g. "Active" or "Inactive"
+    status=None,              # e.g. "Active" or "Inactive" Basiclly is it on the market or not.
     limit=100,
     offset=0,
     include_total=False
 ):
-    # 1. Choose endpoint
+    # 1. Choose endpoint, based on what we need on filters
     if listing_type == "sale":
         base_url = "https://api.rentcast.io/v1/listings/sale"
     elif listing_type == "rental":
@@ -55,14 +55,14 @@ def fetch_listings(
     else:
         raise ValueError("listing_type must be 'sale' or 'rental'")
 
-    # 2. Base params
+    # 2. Base params for project script I added 
     params = {
         "limit": limit,
         "offset": offset,
         "includeTotalCount": str(include_total).lower()
     }
 
-    # 3. Location
+    # 3. Location of properties 
     if zip_code:
         params["zipCode"] = zip_code
     else:
@@ -113,7 +113,7 @@ def fetch_listings(
         "X-Api-Key": API_KEY
     }
 
-    # 7. Call API
+    # 7. Call API which is RentCast
     response = requests.get(base_url, params=params, headers=headers)
 
     if response.status_code != 200:
@@ -147,11 +147,11 @@ def fetch_listings(
         data = sorted(data, key=squared_distance_to_center)
     # _________________End of the proximity for sorts____________________________________________________
 
-    # Optional debug: show keys of the first listing
+    # Show the keys of the first listing
     if data:
         print("First listing keys:", list(data[0].keys()))
 
-    # Optional: print a quick summary (now in sorted order)
+    #prints a quick summary (now in sorted order) honestly useful 
     print("\nSummary of listings (sorted by proximity):")
     for i, listing in enumerate(data, start=1):
         addr = listing.get("formattedAddress")
