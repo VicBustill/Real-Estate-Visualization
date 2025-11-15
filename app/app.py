@@ -1,7 +1,7 @@
 import os
-import streamlit as st # type: ignore
-import pandas as pd # type: ignore
-import pydeck as pdk # type: ignore
+import streamlit as st  # type: ignore
+import pandas as pd  # type: ignore
+import pydeck as pdk  # type: ignore
 from utils.io import load_first_csv
 
 st.set_page_config(page_title="CSC 481 Real Estate Dashboard", layout="wide")
@@ -34,7 +34,14 @@ if df is None:
     st.info("No data yet. Add a CSV into the `data/` folder and reload.")
 else:
     q = df.copy()
-    #st.dataframe(q.head())
+
+    q = q.rename(columns={
+        "addressLine1": "address",   # main street address
+        "bedrooms": "beds",          # number of bedrooms
+        "zipCode": "zip",            # ZIP/postal code
+        "price": "price",            # listing price / rent
+    })
+    # st.dataframe(q.head())
     # uppercase or lowercase should not matter
     q.columns = q.columns = [str(c).strip().lower() for c in q.columns]
 
@@ -59,8 +66,8 @@ else:
 
     # whatever the user chooses in the sidebar should appear
     if zip_code and zip_columns:
-        # the ZIP column and convert every value to a string so we can safely treat it like text
-        q = q[q[zip_code].astype(str).str.startswith(zip_code)]
+        # use the ZIP column name we detected, and filter rows whose ZIP starts with the user input
+        q = q[q[zip_columns].astype(str).str.startswith(zip_code)]
 
     if price_columns:
         q = q[(q[price_columns] >= min_price) &
