@@ -14,7 +14,6 @@ st.write("DEBUG: DataFrame result ->", df)
 st.write("DEBUG: Loaded CSVs ->", os.listdir("data"))
 st.write("DEBUG: DataFrame type ->", type(df))
 
-
 with st.sidebar:
     st.header("Filters")
     zip_code = st.text_input("ZIP (optional)", "")
@@ -34,13 +33,6 @@ if df is None:
     st.info("No data yet. Add a CSV into the `data/` folder and reload.")
 else:
     q = df.copy()
-
-    q = q.rename(columns={
-        "addressLine1": "address",   # main street address
-        "bedrooms": "beds",          # number of bedrooms
-        "zipCode": "zip",            # ZIP/postal code
-        "price": "price",            # listing price / rent
-    })
     # st.dataframe(q.head())
     # uppercase or lowercase should not matter
     q.columns = q.columns = [str(c).strip().lower() for c in q.columns]
