@@ -3,8 +3,6 @@ import streamlit as st  # type: ignore
 import pandas as pd  # type: ignore
 import pydeck as pdk  # type: ignore
 from utils.io import load_first_csv
-from trends import render_trends # in connection with trends.py
-
 
 st.set_page_config(page_title="CSC 481 Real Estate Dashboard", layout="wide")
 st.title("Real Estate Visualization (CSC 481)")
@@ -15,9 +13,6 @@ df = load_first_csv("data")
 st.write("DEBUG: DataFrame result ->", df)
 st.write("DEBUG: Loaded CSVs ->", os.listdir("data"))
 st.write("DEBUG: DataFrame type ->", type(df))
-
-# trends.py info is integrated with the .csv information. 
-render_trends(df)
 
 with st.sidebar:
     st.header("Filters")
@@ -38,7 +33,7 @@ if df is None:
     st.info("No data yet. Add a CSV into the `data/` folder and reload.")
 else:
     q = df.copy()
-    #st.dataframe(q.head())
+    # st.dataframe(q.head())
     # uppercase or lowercase should not matter
     q.columns = q.columns = [str(c).strip().lower() for c in q.columns]
 
