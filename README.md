@@ -1,3 +1,4 @@
+
 # Real-Estate-Visualization
 A software tool whose main objective is to make data comprehension more readable for both home buyers and Real Estate employees.
 
@@ -8,8 +9,7 @@ Software should adapt to most recent computed data
 Buyers should be able to see computed data that is full and accurate with no crashes. 
 
 
-**<ins>   -Agenda   </ins>**_______________________________________________________________________________________________
-
+**<ins>   Team Roles   </ins>**_______________________________________________________________________________________________
 
 -<ins>Customer</ins> (Daira Guadalupe Aguilar) - The Customer drives the project, setting goals and priorities, explains stories, and views CRC sessions.
 
