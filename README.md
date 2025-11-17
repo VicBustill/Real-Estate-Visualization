@@ -2,10 +2,10 @@
 # Real-Estate-Visualization
 A software tool whose main objective is to make data comprehension more readable for both home buyers and Real Estate employees.
 
-**<ins>   -Problem statement:   </ins>**
+**<ins>   Problem statement:   </ins>**
 Buyers cannot compare neighborhoods as quickly, information of listings can vary from sites. Due to them being scattered around in spreadsheets or sites, using data visualization can help. 
 During meetings, agents are unable to rapidly display pricing trends/information by neighborhood.
-Software should adapt to most recent computed data
+Software should adapt to most recent computed data.
 Buyers should be able to see computed data that is full and accurate with no crashes. 
 
 
@@ -17,6 +17,6 @@ Buyers should be able to see computed data that is full and accurate with no cra
 
 -<ins>Developer</ins> (Jessica Lynn Barrios) - The Developer estimates stories, defines engineering tasks from stories, estimates how long stories and tasks will take, and implements stories and unit tests.
 
--<ins>Tracker</ins> (Santiago Garcia) - The Tracker goes around and asks each Programmer how he’s doing, listens to the answer, and takes action if things seem to be going off track. Actions include suggesting a CRC session, setting up a meeting with the customer, asking the coach or another programmer to help
+-<ins>Tracker</ins> (Santiago Garcia) - The Tracker goes around and asks each Programmer how he’s doing, listens to the answer, and takes action if things seem to be going off track. Actions include suggesting a CRC session, setting up a meeting with the customer, asking the coach or another programmer to help.
 
--<ins>Tester</ins> (Victor Gonzalez-Bustillo) - implements and runs functional tests. Graph the results, make sure people know when test results decline
+-<ins>Tester</ins> (Victor Gonzalez-Bustillo) - implements and runs functional tests. Graph the results, make sure people know when test results decline.
