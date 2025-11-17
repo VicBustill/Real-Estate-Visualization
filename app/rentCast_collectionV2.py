@@ -2,7 +2,7 @@ import requests
 import json
 import csv
 
-API_KEY = "8355e5b44e76466296525f90b9523f35"  # Remove our API Key later 
+API_KEY = "8355e5b44e76466296525f90b9523f35"  # Remove our API Key later
 
 #   "Active"   -> only active listings
 #   "Inactive" -> only inactive (off-market) listings
@@ -27,7 +27,8 @@ def fetch_listings(
     zip_code=None,
     city=None,
     state=None,
-    property_type=None,       # e.g. "Single Family", "Condo". We will use filters in our other program for this.
+    # e.g. "Single Family", "Condo". We will use filters in our other program for this.
+    property_type=None,
     min_bedrooms=None,
     max_bedrooms=None,
     min_bathrooms=None,
@@ -42,7 +43,8 @@ def fetch_listings(
     max_year=None,
     min_days_old=None,
     max_days_old=None,
-    status=None,              # e.g. "Active" or "Inactive" Basiclly is it on the market or not.
+    # e.g. "Active" or "Inactive" Basiclly is it on the market or not.
+    status=None,
     limit=100,
     offset=0,
     include_total=False
@@ -55,14 +57,14 @@ def fetch_listings(
     else:
         raise ValueError("listing_type must be 'sale' or 'rental'")
 
-    # 2. Base params for project script I added 
+    # 2. Base params for project script I added
     params = {
         "limit": limit,
         "offset": offset,
         "includeTotalCount": str(include_total).lower()
     }
 
-    # 3. Location of properties 
+    # 3. Location of properties
     if zip_code:
         params["zipCode"] = zip_code
     else:
@@ -151,7 +153,7 @@ def fetch_listings(
     if data:
         print("First listing keys:", list(data[0].keys()))
 
-    #prints a quick summary (now in sorted order) honestly useful 
+    # prints a quick summary (now in sorted order) honestly useful
     print("\nSummary of listings (sorted by proximity):")
     for i, listing in enumerate(data, start=1):
         addr = listing.get("formattedAddress")
@@ -204,4 +206,4 @@ if __name__ == "__main__":  # Here is where we can enter the parameters for our 
         status=LISTING_STATUS
     )
 
-    save_listings_to_csv(listings, filename="listings_RentCastAPI.csv")
+    save_listings_to_csv(listings, filename="data/listings_RentCastAPI.csv")
