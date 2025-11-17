@@ -3,6 +3,9 @@ import streamlit as st  # type: ignore
 import pandas as pd  # type: ignore
 import pydeck as pdk  # type: ignore
 from utils.io import load_first_csv
+# Connecting our API to our application using this
+from rentCast_collectionV2 import fetch_listings
+from rentCast_collectionV2 import save_listings_to_csv
 
 
 st.set_page_config(page_title="CSC 481 Real Estate Dashboard", layout="wide")
@@ -10,7 +13,7 @@ st.title("Real Estate Visualization (CSC 481)")
 st.caption(
     "Drop your real data CSVs into the `data/` folder. This app reads the first CSV it finds.")
 
-df = load_first_csv("data")
+df = load_first_csv("data")  # This should be later
 st.write("DEBUG: DataFrame result ->", df)
 st.write("DEBUG: Loaded CSVs ->", os.listdir("data"))
 st.write("DEBUG: DataFrame type ->", type(df))
@@ -28,17 +31,40 @@ with st.sidebar:
     min_beds = st.number_input("Min beds", min_value=0, value=0, step=1)
     max_beds = st.number_input("Min beds", min_value=0, value=0, step=1)
 
-# ______________This section will make the API call ________________________
+# ______________This section will make the API call ______________________________
+if zip_code or city or state:  # We need at least one input
+    listings = fetch_listings(
+        listing_type="sale",
+        zip_code=zip_code or None,
+        city=city or None,
+        state=state or None,
+        status=None,
+        limit=500,
+    )
+
+    if listings:
+        save_listings_to_csv(
+            listings, filename="data/listings_RentCastAPI.csv")
+        st.write(f"Fetched {len(listings)} listings from RentCast.")
+    else:
+        st.warning(
+            "No listings returned from RentCast with those location inputs.")
+else:
+    st.info("Using existing CSV data in `data/` (no API location input yet).")
+
+# _______________________New data if API is called_________________________________
+
+df = load_first_csv("data")
 
 
-# _________________________________________________________________________
+# __________________________________________________________________________
 # if df is None:
-    # st.info("No data yet. Add a CSV into the `data/` folder and reload.")
+# st.info("No data yet. Add a CSV into the `data/` folder and reload.")
 # else:
-    # q = df.copy()
-    # st.dataframe(q.head())
+# q = df.copy()
+# st.dataframe(q.head())
 
-    # fixing the CSV data
+# fixing the CSV data
 if df is None:
     st.info("No data yet. Add a CSV into the `data/` folder and reload.")
 else:
