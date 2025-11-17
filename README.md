@@ -9,7 +9,7 @@ Software should adapt to most recent computed data.
 Buyers should be able to see computed data that is full and accurate with no crashes. 
 
 
-**<ins>   Team Roles   </ins>**_______________________________________________________________________________________________
+**<ins>   Team Roles   </ins>**_______________________________________________________________________________________
 
 -<ins>Customer</ins> (Daira Guadalupe Aguilar) - The Customer drives the project, setting goals and priorities, explains stories, and views CRC sessions.
 
