@@ -23,13 +23,13 @@ with st.sidebar:
     # One of the parameters for our API 1/3
     zip_code = st.text_input("ZIP (optional)", "")
     # One of the parameters for our API 2/3
-    state = st.text_input("Abbreviated State", "")
-    city = st.text_input("City", "")  # One of the parameters for our API 3/3
+    state = st.text_input2("Abbreviated State", "")
+    city = st.text_input3("City", "")  # One of the parameters for our API 3/3
     min_price = st.number_input("Min price", min_value=0, value=0, step=50000)
-    max_price = st.number_input(
+    max_price = st.number_input2(
         "Max price", min_value=0, value=2_000_000, step=50000)
-    min_beds = st.number_input("Min beds", min_value=0, value=0, step=1)
-    max_beds = st.number_input("Min beds", min_value=0, value=0, step=1)
+    min_beds = st.number_input3("Min beds", min_value=0, value=0, step=1)
+    max_beds = st.number_input4("Min beds", min_value=0, value=0, step=1)
 
 # ______________This section will make the API call ______________________________
 if zip_code or city or state:  # We need at least one input
