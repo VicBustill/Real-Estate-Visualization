@@ -32,15 +32,24 @@ with st.sidebar:
     max_beds = st.number_input("Max beds", min_value=0, value=0, step=1)
 
 # ______________This section will make the API call ______________________________
-if zip_code or city or state:  # We need at least one input
+#This should help with location searches and validation
+location_validity = {}
+if zip_code:
+    # Prefer a ZIP if entered by user 
+    location_validity["zip_code"] = zip_code
+elif city and state:
+    # Otherwise this will require BOTH city and state for a listing
+    location_validity["city"] = city
+    location_validity["state"] = state
+
+if location_validity:
     listings = fetch_listings(
         listing_type="sale",
-        zip_code=zip_code or None,
-        city=city or None,
-        state=state or None,
         status=None,
-        limit=500,
+        limit=1000,
+        **location_validity,
     )
+
 
     if listings:
         save_listings_to_csv(
