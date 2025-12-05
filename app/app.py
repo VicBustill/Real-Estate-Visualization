@@ -3,13 +3,27 @@ import streamlit as st  # type: ignore
 import pandas as pd  # type: ignore
 import pydeck as pdk  # type: ignore
 from utils.io import load_first_csv
-# Connecting our API to our application using this
-from rentCast_collectionV2 import fetch_listings
-from rentCast_collectionV2 import save_listings_to_csv
+
+st.markdown("""<style> /* Main background*/
+            .stApp { 
+                background-color: #000000;
+                color: white;
+            }
+            </style>""", unsafe_allow_html=True
+            )
+
+st.set_page_config(page_title="Real Estate Dashboard", layout="wide")
+
+col_left, col_right = st.columns([1, 11])
+
+with col_left:
+    st.write("")
+    st.image("app/logo.png", width=100, caption="")
+with col_right:
+    st.markdown("""<h1 style = 'color: white; margin-bottom: 0px;'> Real Estate Visualization</h1>""",
+                unsafe_allow_html=True)
 
 
-st.set_page_config(page_title="CSC 481 Real Estate Dashboard", layout="wide")
-st.title("Real Estate Visualization (CSC 481)")
 st.caption(
     "Drop your real data CSVs into the `data/` folder. This app reads the first CSV it finds.")
 
