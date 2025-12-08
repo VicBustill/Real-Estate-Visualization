@@ -6,9 +6,10 @@ import pandas as pd
 import streamlit as st
 import altair as alt
 import pydeck as pdk
+from utils.style import apply_theme
 
-st.set_page_config(page_title="Opportunities", page_icon="🎯", layout="wide")
-
+st.set_page_config(page_title="ROI", page_icon="⏳", layout="wide")
+apply_theme()
 # ---------- load via your repo helper ----------
 
 

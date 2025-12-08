@@ -8,7 +8,23 @@ import pydeck as pdk
 from pathlib import Path
 import os
 
+from utils.style import apply_theme
+from utils.filters_ui import render_sidebar_filters
+
+
 st.set_page_config(page_title="Map3D", page_icon="🗺️", layout="wide")
+apply_theme()
+
+render_sidebar_filters()
+
+# Read current shared filter values from session_state
+zip_code = st.session_state.get("zip_code", "")
+state = st.session_state.get("state", "")
+city = st.session_state.get("city", "")
+min_price = st.session_state.get("min_price", 0)
+max_price = st.session_state.get("max_price", 2_000_000)
+min_beds = st.session_state.get("min_beds", 0)
+max_beds = st.session_state.get("max_beds", 0)
 
 # ---- use your repo's loader (works from any page) ----
 
@@ -48,6 +64,8 @@ if "addr" not in df:
     z = df.get("zipCode",      pd.Series(
         "", index=df.index)).astype(str).fillna("")
     df["addr"] = (a1 + ", " + c + ", " + s + " " + z).str.strip(", ")
+
+
 
 m = df.dropna(subset=["latitude", "longitude"]).copy()
 m = m[(m["latitude"].between(-90, 90)) & (m["longitude"].between(-180, 180))]

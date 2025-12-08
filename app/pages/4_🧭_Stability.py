@@ -5,9 +5,10 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 import altair as alt
+from utils.style import apply_theme
 
 st.set_page_config(page_title="Stability", page_icon="🧭", layout="wide")
-
+apply_theme()
 
 def _load_csv_from_repo() -> pd.DataFrame:
     try:

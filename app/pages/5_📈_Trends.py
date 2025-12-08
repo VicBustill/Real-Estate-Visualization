@@ -6,8 +6,10 @@ import pandas as pd
 import altair as alt
 import streamlit as st
 from pathlib import Path
+from utils.style import apply_theme
 
 st.set_page_config(page_title="Trends", page_icon="📈", layout="wide")
+apply_theme()
 
 # ---------------- helpers ----------------
 
