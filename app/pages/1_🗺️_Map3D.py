@@ -7,6 +7,7 @@ import streamlit as st
 import pydeck as pdk
 from pathlib import Path
 import os
+import shutil
 
 from utils.style import apply_theme
 from utils.filters_ui import render_sidebar_filters
@@ -14,6 +15,31 @@ from rentCast_collectionV2 import fetch_listings, save_listings_to_csv
 
 st.set_page_config(page_title="Map3D", page_icon="🗺️", layout="wide")
 apply_theme()
+
+# -----------------------------------------------------------
+# 🔁 Handle map reset (must happen BEFORE sidebar widgets)
+# -----------------------------------------------------------
+if st.session_state.get("reset_map_flag", False):
+    # Clear sidebar filters (same defaults as Reset Filters button)
+    st.session_state["zip_code"] = ""
+    st.session_state["state"] = ""
+    st.session_state["city"] = ""
+    st.session_state["min_price"] = 0
+    st.session_state["max_price"] = 2_000_000
+    st.session_state["min_beds"] = 0
+    st.session_state["max_beds"] = 0
+    st.session_state["property_type_options"] = []
+    st.session_state["status_option"] = "Any"
+    st.session_state["min_year"] = 0
+    st.session_state["max_year"] = 0
+    st.session_state["min_sqft"] = 0
+    st.session_state["max_sqft"] = 0
+    st.session_state["min_ppsqft"] = 0
+    st.session_state["max_ppsqft"] = 0
+
+    # clear the flag so it doesn't keep resetting
+    st.session_state["reset_map_flag"] = False
+
 
 # Sidebar filters + buttons (shared with Home)
 search_clicked = render_sidebar_filters()
@@ -219,19 +245,37 @@ if sqft_col:
     if max_sqft > 0:
         m = m[m[sqft_col] <= max_sqft]
 
-# 👉 now the rest of your code stays the SAME:
+
+
+
 
 st.title("🗺️ 3D Map")
-st.caption("Data source: /data (via utils.io.load_first_csv)")
+st.caption("Add filters for searching across the map on the sidebar filtered search. Press 'Search listings' to show desired filters.")
 
-# your reset button (if you added it)
-if st.button("🔄 Reset map", help="Reset toggles and recenter view"):
+
+# 🔄 Reset map: restore full dataset + clear filters
+if st.button("🔄 Reset map", help="Clear filters and restore full dataset", key="reset_map"):
+    # 1) Restore the original full dataset
+    base_path = "data/rent_listings.csv"          # original full data
+    target_path = "data/listings_RentCastAPI.csv" # working data file used by pages
+
+    if os.path.exists(base_path):
+        shutil.copyfile(base_path, target_path)
+        st.success("Reset complete: full dataset restored.")
+    else:
+        st.warning("Could not find data/rent_listings.csv to restore from.")
+
+    # 2) Tell the *next* run to clear filters before rendering sidebar
+    st.session_state["reset_map_flag"] = True
+
+    # 3) Rerun the app so the reset takes effect
     try:
         st.rerun()
     except Exception:
         st.experimental_rerun()
 
-st.caption(f"Map debug: total rows {len(df):,} • valid geo rows {len(m):,}")
+
+st.caption("Press button above to reset map to show all listings.")
 if m.empty:
     st.info("No valid coordinates to plot.")
     st.stop()
@@ -345,3 +389,39 @@ if not layers:
 
 # Render with an explicit height so it’s visible
 st.pydeck_chart(deck, use_container_width=True, height=600)
+
+
+# -------------------------------------------------------
+# 🔚 Simple Streamlit Footer 
+# -------------------------------------------------------
+
+with st.container():
+    st.markdown("---")
+
+    col_left, col_right = st.columns([1, 4])
+
+    # Left side: copyright / name
+    with col_left:
+        st.caption("© 2025 Real Estate Visualization")
+
+    # Right side: simple page links
+    with col_right:
+        link_cols = st.columns(6)
+
+        with link_cols[0]:
+            st.page_link("Home.py", label="Home", icon="🏠")
+
+        with link_cols[1]:
+            st.page_link("pages/1_🗺️_Map3D.py", label="3D Map", icon="🗺️")
+
+        with link_cols[2]:
+            st.page_link("pages/2_🎯_Opportunities.py", label="Opportunities", icon="🎯")
+        
+        with link_cols[3]:
+            st.page_link("pages/3_⏳_ROI.py", label="ROI", icon="⏳")
+
+        with link_cols[4]:
+            st.page_link("pages/4_🧭_Stability.py", label="Stability", icon="🧭")
+
+        with link_cols[5]:
+            st.page_link("pages/5_📈_Trends.py", label="Trends", icon="📈")

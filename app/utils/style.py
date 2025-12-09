@@ -21,8 +21,8 @@ def apply_theme() -> None:
 
         /* Sidebar */
             [data-testid="stSidebar"] {
-                background: #1a2b6d;
-                border-right: 1px solid rgba(255, 255, 255, 0.15);
+                background: #2f6f97;
+                border-right: 1px solid rgba(255,255,255,0.1);
             }
 
         /* Sidebar hover highlight (all input containers) */
@@ -91,25 +91,13 @@ def apply_theme() -> None:
             }
 
         /* BUTTON BASE STYLE */
-            .stButton>button {
-                background: linear-gradient(135deg, #e63946, #b81f2d);
-                color: white;
-                border-radius: 999px;
-                border: none;
-                font-weight: 600;
-                padding: 0.55rem 1.4rem;
-
-                /* ✨ Matching soft shadow */
-                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-
-                transition: all 0.2s ease;
-            }
+            
 
             /* BUTTON HOVER */
             .stButton>button:hover {
                 filter: brightness(1.05);
 
-                /* ✨ Slightly stronger hover shadow */
+                /* Slightly stronger hover shadow */
                 box-shadow: 0 6px 14px rgba(0, 0, 0, 0.20);
             }
 
@@ -225,6 +213,33 @@ def apply_theme() -> None:
             }
 
         
+            /* Red reset button styling (light theme compatible) */
+            .stButton > button[kind="secondary"], 
+            button#reset_map {
+                background: linear-gradient(135deg, #e63946, #b81f2d) !important;
+                color: white !important;
+                border-radius: 10px !important;
+                border: none !important;
+                font-weight: 600 !important;
+                padding: 0.45rem 1.2rem !important;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.15) !important;
+            }
+
+            button#reset_map:hover {
+                filter: brightness(1.08) !important;
+            }
+
+            /* Toggle label text for light backgrounds */
+            .stToggle label {
+                color: #0f172a !important;
+                font-weight: 600 !important;
+            }
+
+            [data-testid="stTickBar"] label {
+                color: #0f172a !important;
+            }
+
+
         </style>
         """,
         unsafe_allow_html=True,

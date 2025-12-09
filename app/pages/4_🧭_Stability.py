@@ -137,3 +137,39 @@ if not dist.empty:
     ).mark_area(opacity=0.6).encode(x=alt.X(f"{mcol}:Q", title=metric), y="density:Q")
     st.altair_chart(density.properties(height=260), use_container_width=True)
 st.caption("Stability = (1 − IQR/median)×100 with 95% bootstrap CI. Lower outlier share and higher stability indicate steadier pricing.")
+
+
+# -------------------------------------------------------
+# 🔚 Simple Streamlit Footer 
+# -------------------------------------------------------
+
+with st.container():
+    st.markdown("---")
+
+    col_left, col_right = st.columns([1, 4])
+
+    # Left side: copyright / name
+    with col_left:
+        st.caption("© 2025 Real Estate Visualization")
+
+    # Right side: simple page links
+    with col_right:
+        link_cols = st.columns(6)
+
+        with link_cols[0]:
+            st.page_link("Home.py", label="Home", icon="🏠")
+
+        with link_cols[1]:
+            st.page_link("pages/1_🗺️_Map3D.py", label="3D Map", icon="🗺️")
+
+        with link_cols[2]:
+            st.page_link("pages/2_🎯_Opportunities.py", label="Opportunities", icon="🎯")
+        
+        with link_cols[3]:
+            st.page_link("pages/3_⏳_ROI.py", label="ROI", icon="⏳")
+
+        with link_cols[4]:
+            st.page_link("pages/4_🧭_Stability.py", label="Stability", icon="🧭")
+
+        with link_cols[5]:
+            st.page_link("pages/5_📈_Trends.py", label="Trends", icon="📈")

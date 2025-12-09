@@ -135,7 +135,7 @@ components.html(
 
     </div>
     """,
-    height=330
+    height=350
 )
 
 # -----------------------------------------------------------
@@ -385,6 +385,8 @@ else:
     # 8️⃣ RAW DATA TABLE (inside a darker section block)
     # -------------------------------------------------------
 
+    st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
+
     st.markdown(
         "<div class='big-section-title'>The live raw data we are processing.</div>",
         unsafe_allow_html=True,
@@ -401,6 +403,8 @@ else:
     # 9️⃣ GET IN CONTACT W/ AGENT
     # -------------------------------------------------------
 
+    st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
+    
     st.markdown(
         "<div class='contact-section'><div class='big-section-title'>Get in contact with a Real Estate Agent!</div>",
         unsafe_allow_html=True,
@@ -443,105 +447,36 @@ else:
 
 
 # -------------------------------------------------------
-# 🔚 FOOTER: Navigation Cards to Other Pages
+# 🔚 Simple Streamlit Footer 
 # -------------------------------------------------------
 
-st.markdown("---")
+with st.container():
+    st.markdown("---")
 
-st.markdown(
-    "<div class='big-section-title'>Keep exploring the data</div>",
-    unsafe_allow_html=True,
-)
-st.caption("Jump into different views of the dataset to explore pricing, trends, stability, ROI, and more.")
+    col_left, col_right = st.columns([1, 4])
 
-# -------------------
-# ROW 1: Map3D • Trends • Opportunities
-# -------------------
+    # Left side: copyright / name
+    with col_left:
+        st.caption("© 2025 Real Estate Visualization")
 
-row1 = [
-    ("🗺️ 3D Map", 
-     "Explore listings in 3D and see patterns by location.",
-     "pages/Map3D.py", 
-     "nav_map3d"),
+    # Right side: simple page links
+    with col_right:
+        link_cols = st.columns(6)
 
-    ("📈 Trends", 
-     "Track how prices and inventory change across cities and ZIPs.",
-     "pages/Trends.py", 
-     "nav_trends"),
+        with link_cols[0]:
+            st.page_link("Home.py", label="Home", icon="🏠")
 
-    ("🎯 Opportunities", 
-     "Identify potentially undervalued properties using data.",
-     "pages/Opportunities.py", 
-     "nav_opportunities"),
-]
+        with link_cols[1]:
+            st.page_link("pages/1_🗺️_Map3D.py", label="3D Map", icon="🗺️")
 
-cols = st.columns(3)
+        with link_cols[2]:
+            st.page_link("pages/2_🎯_Opportunities.py", label="Opportunities", icon="🎯")
+        
+        with link_cols[3]:
+            st.page_link("pages/3_⏳_ROI.py", label="ROI", icon="⏳")
 
-for col, (title, text, page_path, key) in zip(cols, row1):
-    with col:
-        # Card block
-        st.markdown(
-            f"""
-            <div class="nav-card">
-                <div class="nav-card-title">{title}</div>
-                <div class="nav-card-text">{text}</div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-        # Button
-        if st.button("Open", key=key):
-            try:
-                st.switch_page(page_path)
-            except:
-                st.warning("Use the sidebar to open this page.")
+        with link_cols[4]:
+            st.page_link("pages/4_🧭_Stability.py", label="Stability", icon="🧭")
 
-
-# -------------------
-# ROW 2: ROI • LOGO • Stability (centered)
-# -------------------
-
-cols = st.columns(3)
-
-# Left card: ROI
-with cols[0]:
-    st.markdown(
-        """
-        <div class="nav-card">
-            <div class="nav-card-title">⏳ ROI</div>
-            <div class="nav-card-text">Project long-term gains and costs over different time horizons.</div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-    if st.button("Open ROI", key="nav_roi"):
-        try:
-            st.switch_page("pages/ROI.py")
-        except:
-            st.warning("Use the sidebar.")
-
-
-# Center logo column (1–4–1 centering)
-with cols[1]:
-    left, center, right = st.columns([1, 4, 1])
-
-    with center:
-        st.image("app/logo.png", width=200)   # adjust size if needed
-
-
-# Right card: Stability
-with cols[2]:
-    st.markdown(
-        """
-        <div class="nav-card">
-            <div class="nav-card-title">🧭 Stability</div>
-            <div class="nav-card-text">Compare how stable pricing is across neighborhoods.</div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-    if st.button("Open Stability", key="nav_stability"):
-        try:
-            st.switch_page("pages/Stability.py")
-        except:
-            st.warning("Use the sidebar.")
+        with link_cols[5]:
+            st.page_link("pages/5_📈_Trends.py", label="Trends", icon="📈")
