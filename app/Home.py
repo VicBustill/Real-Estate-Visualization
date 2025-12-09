@@ -9,7 +9,6 @@ from utils.style import apply_theme
 from rentCast_collectionV2 import fetch_listings, save_listings_to_csv
 from utils.filters_ui import render_sidebar_filters
 
-
 # -----------------------------------------------------------
 # 1️⃣ PAGE CONFIG + GLOBAL UI STYLING
 # -----------------------------------------------------------
@@ -22,49 +21,122 @@ st.set_page_config(
 
 apply_theme()
 
+import streamlit.components.v1 as components
 
-# -----------------------------------------------------------
-# 2️⃣ HEADER
-# -----------------------------------------------------------
+# get image
+import base64
+def get_base64_image(path):
+    with open(path, "rb") as f:
+        data = f.read()
+    return base64.b64encode(data).decode("utf-8")
+hero_img = get_base64_image("app/hero-header.png")
 
-col_left, col_right = st.columns([1, 11])
 
-with col_left:
-    st.write("")
-    st.image("app/logo.png", width=90)
+# header
+components.html(
+    f"""
+    <style>
+        .hero-container {{
+            position: relative;
+            width: 100%;
+            height: 320px;  /* taller so search fits */
+            background-image: url('data:image/png;base64,{hero_img}');
+            background-size: cover;
+            background-position: center 25%;
+            border-radius: 12px;
+            overflow: hidden;  /* don't clip the search bar */
+        }}
 
-with col_right:
-    st.markdown(
-        """
-        <div style="margin-bottom: 1.2rem;">
-            <div class="app-title">Real Estate Visualization</div>
-            <p class="app-subtitle">
-                Explore listings by location, price, and bedrooms with an interactive dashboard.
+
+        .hero-overlay {{
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                rgba(0, 0, 0, 0.55),
+                rgba(0, 0, 0, 0.25)
+            );
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }}
+
+        .hero-title {{
+            font-size: 2.7rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 0.4rem;
+        }}
+
+        .hero-subtitle {{
+            font-size: 1.15rem;
+            color: #e5e7eb;
+            max-width: 600px;
+            margin-bottom: 1.8rem;
+        }}
+
+        .hero-search-wrapper {{
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }}
+
+        .hero-search {{
+            background: white;
+            padding: 0.75rem 1rem;
+            border-radius: 999px;
+            display: flex;
+            gap: 0.5rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+        }}
+
+        .hero-search input {{
+            padding: 0.55rem 1rem;
+            min-width: 260px;
+            border-radius: 999px;
+            border: none;
+            outline: none;
+            font-size: 0.95rem;
+        }}
+
+        .hero-search button {{
+            padding: 0.55rem 1.2rem;
+            border-radius: 999px;
+            border: none;
+            background: linear-gradient(135deg, #e63946, #b81f2d);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }}
+    </style>
+
+    <div class="hero-container">
+
+        <div class="hero-overlay">
+            <h1 class="hero-title">Real Estate Visualization</h1>
+            <p class="hero-subtitle">
+                Explore listings, analyze neighborhoods, and understand market trends—all in one place.
             </p>
         </div>
-        """,
-        unsafe_allow_html=True,
-    )
 
-st.markdown("---")
+        <div class="hero-search-wrapper">
+            <div class="hero-search">
+                <input type="text" placeholder="Search by city, zip code, or neighborhood">
+                <button>Search</button>
+            </div>
+        </div>
 
-# -----------------------------------------------------------
-# 🌍 Load full dataset from rent_listings.csv
-# -----------------------------------------------------------
-if st.button("🌍 Load full dataset", help="Restore the full dataset from rent_listings.csv"):
-    base_path = "data/rent_listings.csv"
-    target_path = "data/listings_RentCastAPI.csv"
-
-    if os.path.exists(base_path):
-        shutil.copyfile(base_path, target_path)
-        st.success("Full dataset loaded from rent_listings.csv. All pages now use this data.")
-        try:
-            st.rerun()
-        except Exception:
-            st.experimental_rerun()
-    else:
-        st.error("data/rent_listings.csv not found. Please add it to the data/ folder.")
-
+    </div>
+    """,
+    height=330
+)
 
 # -----------------------------------------------------------
 # 3️⃣ SIDEBAR FILTERS
@@ -145,26 +217,7 @@ if search_clicked:
             st.success(f"Fetched {len(listings)} listings from RentCast.")
         else:
             st.warning("No listings returned from RentCast with those filters.")
-else:
-    # No search click yet
-    if not location_validity:
-        st.markdown(
-            """
-        <div style="
-            background-color: rgba(255,255,255,0.05);
-            padding: 0.75rem 1rem;
-            border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.08);
-            color: #cbd5e1;
-            font-size: 0.9rem;
-            margin-bottom: 1rem;">
-            No search filters set — displaying existing CSV data.
-        </div>
-        """,
-            unsafe_allow_html=True,
-        )
-    else:
-        st.info("Location set. Click 'Search listings' to fetch fresh data.")
+
 
 
 # -----------------------------------------------------------
@@ -175,13 +228,83 @@ df = load_first_csv("data")
 
 if df is None:
     st.info("No data yet. Add a CSV into the `data/` folder and reload.")
+
 else:
-    q = df.copy()
-    q.columns = [str(c).strip().lower() for c in q.columns]
+    # ---------- Prep mini-map data (m) ----------
+    m = df.copy()
+    for c in ("latitude", "longitude", "price"):
+        if c in m.columns:
+            m[c] = pd.to_numeric(m[c], errors="coerce")
+
+    if {"latitude", "longitude"}.issubset(m.columns):
+        m = m.dropna(subset=["latitude", "longitude"])
+        m = m[(m["latitude"].between(-90, 90)) & (m["longitude"].between(-180, 180))]
+        m = m.head(500)  # cap for speed
+    else:
+        m = m.iloc[0:0]
+
+    # ---------- 3D MAP HOME SECTION ----------
+
+    st.markdown(
+        "<div class='big-section-title'>Explore your market in 3D</div>",
+        unsafe_allow_html=True,
+    )
+
+    col1, col2 = st.columns([1.4, 2])
+
+    with col1:
+        st.markdown(
+            """
+            ### 🗺️ 3D Neighborhood Map
+
+            Understand <em>where</em> listings are, not just their prices.
+
+            - See clusters and hot spots  
+            - Compare neighborhoods at a glance  
+            - View price patterns by location  
+            """,
+            unsafe_allow_html=True,
+        )
+
+        try:
+            if st.button("Open 3D Map", use_container_width=True, key="open_map3d"):
+                st.switch_page("pages/Map3D.py")
+        except Exception:
+            st.caption("Use the sidebar to open the **3D Map** page.")
+
+    with col2:
+        if m.empty:
+            st.caption("No listings with coordinates available yet to preview the map.")
+        else:
+            layer = pdk.Layer(
+                "ScatterplotLayer",
+                data=m,
+                get_position="[longitude, latitude]",
+                get_radius=60,
+                get_fill_color=[59, 130, 246, 180],
+                pickable=False,
+            )
+            view_state = pdk.ViewState(
+                longitude=float(m["longitude"].mean()),
+                latitude=float(m["latitude"].mean()),
+                zoom=9,
+                pitch=45,
+            )
+            deck = pdk.Deck(
+                layers=[layer],
+                initial_view_state=view_state,
+                map_provider="carto",
+                map_style="dark",
+            )
+            st.pydeck_chart(deck, use_container_width=True, height=260)
+
+
 
     # -------------------------------------------------------
-    # 6️⃣ COLUMN DETECTION
+    # 6️⃣ COLUMN DETECTION (for filters)
     # -------------------------------------------------------
+    q = df.copy()
+    q.columns = [str(c).strip().lower() for c in q.columns]
 
     zip_columns = next(
         (c for c in ["zip", "zipcode", "postal_code"] if c in q.columns), None
@@ -194,14 +317,17 @@ else:
     )
 
     property_type_col = next(
-        (c for c in ["propertytype", "property_type", "type"] if c in q.columns), None
+        (c for c in ["propertytype", "property_type", "type"] if c in q.columns),
+        None,
     )
     status_col = "status" if "status" in q.columns else None
     year_col = next(
-        (c for c in ["yearbuilt", "year_built"] if c in q.columns), None
+        (c for c in ["yearbuilt", "year_built"] if c in q.columns),
+        None,
     )
     sqft_col = next(
-        (c for c in ["squarefootage", "sqft", "livingarea"] if c in q.columns), None
+        (c for c in ["squarefootage", "sqft", "livingarea"] if c in q.columns),
+        None,
     )
 
     # compute price per sqft if possible
@@ -213,51 +339,42 @@ else:
     # -------------------------------------------------------
     # 7️⃣ APPLY FILTERS (0 / empty = "no filter")
     # -------------------------------------------------------
-
-    # ZIP (string prefix match)
     if zip_code and zip_columns:
         q = q[q[zip_columns].astype(str).str.startswith(str(zip_code))]
 
-    # price range (0 means "no limit")
     if price_columns:
         if min_price > 0:
             q = q[q[price_columns] >= min_price]
         if max_price > 0:
             q = q[q[price_columns] <= max_price]
 
-    # beds range
     if bed_columns:
         if min_beds > 0:
             q = q[q[bed_columns] >= min_beds]
         if max_beds > 0:
             q = q[q[bed_columns] <= max_beds]
 
-    # property type (multi-select)
     if property_type_col and property_type_options:
         q = q[q[property_type_col].isin(property_type_options)]
 
-    # status ("Any" means no filter)
     if status_col and status_option != "Any":
         q = q[
             q[status_col].astype(str).str.lower()
             == status_option.lower()
         ]
 
-    # year built range
     if year_col:
         if min_year > 0:
             q = q[q[year_col] >= min_year]
         if max_year > 0:
             q = q[q[year_col] <= max_year]
 
-    # square footage range
     if sqft_col:
         if min_sqft > 0:
             q = q[q[sqft_col] >= min_sqft]
         if max_sqft > 0:
             q = q[q[sqft_col] <= max_sqft]
 
-    # price per sqft range (only if we have that column)
     if ppsqft_col:
         if min_ppsqft > 0:
             q = q[q[ppsqft_col] >= min_ppsqft]
@@ -265,32 +382,166 @@ else:
             q = q[q[ppsqft_col] <= max_ppsqft]
 
     # -------------------------------------------------------
-    # 8️⃣ UI: TITLE, KPIs, TABLE
+    # 8️⃣ RAW DATA TABLE (inside a darker section block)
     # -------------------------------------------------------
 
     st.markdown(
-        "<div class='section-title'>📊 Match the Listings</div>",
+        "<div class='big-section-title'>The live raw data we are processing.</div>",
         unsafe_allow_html=True,
     )
 
-    if not q.empty:
-        k1, k2, k3 = st.columns(3)
-        # total listings after filters
-        k1.metric("Listings", f"{len(q):,}")
+    st.caption(
+        "We take this data and transform it into maps, graphs, and trends to help you decide on your next home!"
+    )
+    st.dataframe(df, use_container_width=True, hide_index=True)
 
-        # average price, if we found a price column
-        if price_columns:
-            avg_price = float(q[price_columns].mean())
-            k2.metric("Avg price", f"${avg_price:,.0f}")
-        else:
-            k2.metric("Avg price", "N/A")
 
-        # median beds, if we found a beds column
-        if bed_columns:
-            median_beds = float(q[bed_columns].median())
-            k3.metric("Median beds", f"{median_beds:,.1f}")
-        else:
-            k3.metric("Median beds", "N/A")
 
-    st.caption("Showing listings that match your filters.")
-    st.dataframe(q, use_container_width=True, hide_index=True)
+    # -------------------------------------------------------
+    # 9️⃣ GET IN CONTACT W/ AGENT
+    # -------------------------------------------------------
+
+    st.markdown(
+        "<div class='contact-section'><div class='big-section-title'>Get in contact with a Real Estate Agent!</div>",
+        unsafe_allow_html=True,
+    )
+
+
+    c1, c2 = st.columns([1.2, 1.5])
+
+    with c1:
+        st.markdown(
+            """
+            If you would like to inquire about any of the listings, enter your information to get connected to a real estate agent to learn more.
+
+            (This form is for demonstration only and does not send real messages.)
+            """,
+        )
+        center = st.columns([1, 4, 1])
+
+        with center[1]:
+            st.image("app/agent.png", width=250)
+
+    with c2:
+        name = st.text_input("Your name", key="agent_name")
+        email = st.text_input("Email", key="agent_email")
+        goal = st.selectbox(
+            "What are you looking for?",
+            ["Just exploring", "Buying a home", "Investment property", "Comparing markets"],
+            key="agent_goal",
+        )
+        message = st.text_area(
+            "Optional message",
+            key="agent_message",
+            height=80,
+            placeholder="Tell us what kind of property or area you're interested in...",
+        )
+
+        st.button("Submit inquiry (demo)", key="agent_submit")
+
+    st.markdown("</div>", unsafe_allow_html=True)
+
+
+# -------------------------------------------------------
+# 🔚 FOOTER: Navigation Cards to Other Pages
+# -------------------------------------------------------
+
+st.markdown("---")
+
+st.markdown(
+    "<div class='big-section-title'>Keep exploring the data</div>",
+    unsafe_allow_html=True,
+)
+st.caption("Jump into different views of the dataset to explore pricing, trends, stability, ROI, and more.")
+
+# -------------------
+# ROW 1: Map3D • Trends • Opportunities
+# -------------------
+
+row1 = [
+    ("🗺️ 3D Map", 
+     "Explore listings in 3D and see patterns by location.",
+     "pages/Map3D.py", 
+     "nav_map3d"),
+
+    ("📈 Trends", 
+     "Track how prices and inventory change across cities and ZIPs.",
+     "pages/Trends.py", 
+     "nav_trends"),
+
+    ("🎯 Opportunities", 
+     "Identify potentially undervalued properties using data.",
+     "pages/Opportunities.py", 
+     "nav_opportunities"),
+]
+
+cols = st.columns(3)
+
+for col, (title, text, page_path, key) in zip(cols, row1):
+    with col:
+        # Card block
+        st.markdown(
+            f"""
+            <div class="nav-card">
+                <div class="nav-card-title">{title}</div>
+                <div class="nav-card-text">{text}</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+        # Button
+        if st.button("Open", key=key):
+            try:
+                st.switch_page(page_path)
+            except:
+                st.warning("Use the sidebar to open this page.")
+
+
+# -------------------
+# ROW 2: ROI • LOGO • Stability (centered)
+# -------------------
+
+cols = st.columns(3)
+
+# Left card: ROI
+with cols[0]:
+    st.markdown(
+        """
+        <div class="nav-card">
+            <div class="nav-card-title">⏳ ROI</div>
+            <div class="nav-card-text">Project long-term gains and costs over different time horizons.</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+    if st.button("Open ROI", key="nav_roi"):
+        try:
+            st.switch_page("pages/ROI.py")
+        except:
+            st.warning("Use the sidebar.")
+
+
+# Center logo column (1–4–1 centering)
+with cols[1]:
+    left, center, right = st.columns([1, 4, 1])
+
+    with center:
+        st.image("app/logo.png", width=200)   # adjust size if needed
+
+
+# Right card: Stability
+with cols[2]:
+    st.markdown(
+        """
+        <div class="nav-card">
+            <div class="nav-card-title">🧭 Stability</div>
+            <div class="nav-card-text">Compare how stable pricing is across neighborhoods.</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+    if st.button("Open Stability", key="nav_stability"):
+        try:
+            st.switch_page("pages/Stability.py")
+        except:
+            st.warning("Use the sidebar.")
