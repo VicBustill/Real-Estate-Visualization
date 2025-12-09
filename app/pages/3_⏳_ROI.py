@@ -5,10 +5,82 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 import altair as alt
+
 from utils.style import apply_theme
+from utils.filters_ui import render_sidebar_filters
+from rentCast_collectionV2 import fetch_listings, save_listings_to_csv
 
 st.set_page_config(page_title="ROI", page_icon="⏳", layout="wide")
 apply_theme()
+
+# Sidebar filters + buttons (shared with Home)
+search_clicked = render_sidebar_filters()
+
+# Read current filter values from session_state
+zip_code = st.session_state.get("zip_code", "")
+state = st.session_state.get("state", "")
+city = st.session_state.get("city", "")
+min_price = st.session_state.get("min_price", 0)
+max_price = st.session_state.get("max_price", 2_000_000)
+min_beds = st.session_state.get("min_beds", 0)
+max_beds = st.session_state.get("max_beds", 0)
+
+property_type_options = st.session_state.get("property_type_options", [])
+status_option = st.session_state.get("status_option", "Any")
+min_year = st.session_state.get("min_year", 0)
+max_year = st.session_state.get("max_year", 0)
+min_sqft = st.session_state.get("min_sqft", 0)
+max_sqft = st.session_state.get("max_sqft", 0)
+min_ppsqft = st.session_state.get("min_ppsqft", 0)
+max_ppsqft = st.session_state.get("max_ppsqft", 0)
+
+# 🔍 API trigger from this page too
+location_validity = {}
+if zip_code:
+    location_validity["zip_code"] = zip_code
+elif city and state:
+    location_validity["city"] = city
+    location_validity["state"] = state
+
+if search_clicked:
+    if not location_validity:
+        st.warning(
+            "Please enter either a ZIP code or both City and State before searching."
+        )
+    else:
+        filter_kwargs = {}
+
+        if property_type_options:
+            filter_kwargs["property_type"] = property_type_options[0]
+
+        api_status = None if status_option == "Any" else status_option
+
+        filter_kwargs["min_price"] = min_price or None
+        filter_kwargs["max_price"] = max_price or None
+        filter_kwargs["min_bedrooms"] = min_beds or None
+        filter_kwargs["max_bedrooms"] = max_beds or None
+        filter_kwargs["min_year"] = min_year or None
+        filter_kwargs["max_year"] = max_year or None
+        filter_kwargs["min_sqft"] = min_sqft or None
+        filter_kwargs["max_sqft"] = max_sqft or None
+
+        with st.spinner("Fetching listings from RentCast..."):
+            listings = fetch_listings(
+                listing_type="sale",
+                status=api_status,
+                limit=1000,
+                **location_validity,
+                **filter_kwargs,
+            )
+
+        if listings:
+            save_listings_to_csv(
+                listings, filename="data/listings_RentCastAPI.csv"
+            )
+            st.success(f"Fetched {len(listings)} listings from RentCast.")
+        else:
+            st.warning("No listings returned from RentCast with those filters.")
+
 
 def _load_csv_from_repo() -> pd.DataFrame:
     try:
