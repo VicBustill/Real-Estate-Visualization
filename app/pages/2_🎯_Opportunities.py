@@ -9,7 +9,7 @@ import pydeck as pdk
 
 from utils.style import apply_theme
 
-st.set_page_config(page_title="ROI", page_icon="⏳", layout="wide")
+st.set_page_config(page_title="Opportunities", page_icon="🎯", layout="wide")
 apply_theme()
 
 
@@ -74,6 +74,7 @@ if df.empty or "price" not in df.columns:
     st.stop()
 
 st.title("🎯 Opportunity Detector")
+
 
 # ------------------ Filters ------------------
 with st.expander("Filters", expanded=True):

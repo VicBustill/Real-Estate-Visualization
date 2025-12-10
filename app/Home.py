@@ -120,9 +120,9 @@ components.html(
     <div class="hero-container">
 
         <div class="hero-overlay">
-            <h1 class="hero-title">Real Estate Visualization</h1>
+            <h1 class="hero-title">Property Scope</h1>
             <p class="hero-subtitle">
-                Explore listings, analyze neighborhoods, and understand market trends—all in one place.
+                Explore listings, analyze neighborhoods, and understand market trends—all in one place using our real-estate visualization software.
             </p>
         </div>
 

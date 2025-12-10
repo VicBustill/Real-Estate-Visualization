@@ -92,12 +92,20 @@ def apply_theme() -> None:
 
         /* BUTTON BASE STYLE */
             
+            .stButton > button {
+                background: linear-gradient(135deg, #e63946, #b81f2d) !important;
+                color: white !important;
+                border-radius: 10px !important;
+                border: none !important;
+                font-weight: 600 !important;
+                padding: 0.45rem 1.2rem !important;
+                font-size: 0.9rem !important;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.15) !important;
+            }
 
             /* BUTTON HOVER */
             .stButton>button:hover {
                 filter: brightness(1.05);
-
-                /* Slightly stronger hover shadow */
                 box-shadow: 0 6px 14px rgba(0, 0, 0, 0.20);
             }
 
@@ -212,23 +220,6 @@ def apply_theme() -> None:
                 color: #4b5563;
             }
 
-        
-            /* Red reset button styling (light theme compatible) */
-            .stButton > button[kind="secondary"], 
-            button#reset_map {
-                background: linear-gradient(135deg, #e63946, #b81f2d) !important;
-                color: white !important;
-                border-radius: 10px !important;
-                border: none !important;
-                font-weight: 600 !important;
-                padding: 0.45rem 1.2rem !important;
-                box-shadow: 0 4px 10px rgba(0,0,0,0.15) !important;
-            }
-
-            button#reset_map:hover {
-                filter: brightness(1.08) !important;
-            }
-
             /* Toggle label text for light backgrounds */
             .stToggle label {
                 color: #0f172a !important;
@@ -239,6 +230,37 @@ def apply_theme() -> None:
                 color: #0f172a !important;
             }
 
+            [data-testid="stExpander"] {
+                background: rgba(255, 255, 255, 0.9) !important;
+                border-radius: 10px !important;
+                border: 1px solid rgba(15, 23, 42, 0.1) !important;
+                color: #0f172a !important;
+            }
+            [data-testid="stExpander"] summary {
+                color: #0f172a !important;
+                font-weight: 600 !important;
+            }
+
+            /* FIX the Expander Header ("Filters") so it stays readable on light theme */
+            [data-testid="stExpander"] summary {
+                background-color: rgba(220, 235, 245, 0.85) !important;  /* soft light blue */
+                color: #0f172a !important;                                /* dark readable text */
+                font-weight: 700 !important;
+                border-radius: 8px !important;
+                padding: 6px 10px !important;
+            }
+
+            /* Remove dark hover overlay on expander headers */
+            [data-testid="stExpander"] summary:hover {
+                background-color: rgba(220, 235, 245, 1) !important;      /* slightly brighter */
+            }
+
+            /* Keep the inside body white/light */
+            [data-testid="stExpander"] > div {
+                background-color: rgba(255, 255, 255, 0.9) !important;
+                border-radius: 8px !important;
+                padding-top: 8px !important;
+            }
 
         </style>
         """,

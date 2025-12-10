@@ -246,18 +246,14 @@ if sqft_col:
         m = m[m[sqft_col] <= max_sqft]
 
 
-
-
-
 st.title("🗺️ 3D Map")
 st.caption("Add filters for searching across the map on the sidebar filtered search. Press 'Search listings' to show desired filters.")
 
 
-# 🔄 Reset map: restore full dataset + clear filters
-if st.button("🔄 Reset map", help="Clear filters and restore full dataset", key="reset_map"):
-    # 1) Restore the original full dataset
-    base_path = "data/rent_listings.csv"          # original full data
-    target_path = "data/listings_RentCastAPI.csv" # working data file used by pages
+# this is now red
+if st.button("🔄 Reset map", help="Clear filters and restore full dataset", key="reset_map", type="primary"):
+    base_path = "data/rent_listings.csv"
+    target_path = "data/listings_RentCastAPI.csv"
 
     if os.path.exists(base_path):
         shutil.copyfile(base_path, target_path)
@@ -265,14 +261,13 @@ if st.button("🔄 Reset map", help="Clear filters and restore full dataset", ke
     else:
         st.warning("Could not find data/rent_listings.csv to restore from.")
 
-    # 2) Tell the *next* run to clear filters before rendering sidebar
     st.session_state["reset_map_flag"] = True
 
-    # 3) Rerun the app so the reset takes effect
     try:
         st.rerun()
     except Exception:
         st.experimental_rerun()
+
 
 
 st.caption("Press button above to reset map to show all listings.")
